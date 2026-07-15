@@ -1,0 +1,2468 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Novelah Tool</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        /* ===== RESET & BASE ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0a1a;
+            --bg-secondary: #12122a;
+            --bg-card: rgba(26, 26, 62, 0.85);
+            --bg-card-hover: rgba(34, 34, 74, 0.9);
+            --border-color: rgba(42, 42, 90, 0.6);
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0c0;
+            --text-muted: #6a6a8a;
+            --purple: #7c6cf0;
+            --purple-glow: rgba(124, 108, 240, 0.3);
+            --pink: #f06c9e;
+            --orange: #f09c6c;
+            --green: #6cf0a0;
+            --red: #f06c6c;
+            --gold: #f0d06c;
+            --gold-glow: rgba(240, 208, 108, 0.3);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            --radius: 16px;
+            --radius-sm: 10px;
+            --tiktok: #ff0050;
+            --youtube: #ff0000;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 16px 12px 30px;
+            background-image: radial-gradient(ellipse at 50% 0%, #1a1a4e 0%, #0a0a1a 70%);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* ===== CELESTIAL EFFECTS ===== */
+        .sky-container {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .moon {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background: radial-gradient(circle at 30% 30%, #f0e6d0, #c4b8a0);
+            border-radius: 50%;
+            box-shadow: 0 0 40px rgba(240, 230, 208, 0.3), 0 0 80px rgba(240, 230, 208, 0.1);
+            animation: moonFall 25s linear infinite;
+            opacity: 0.8;
+        }
+        .moon::after {
+            content: '';
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: radial-gradient(circle, rgba(200, 190, 170, 0.5), transparent);
+            border-radius: 50%;
+            top: 15px;
+            left: 20px;
+            box-shadow: 8px 10px 0 3px rgba(200, 190, 170, 0.3), 18px 5px 0 2px rgba(200, 190, 170, 0.2);
+        }
+
+        .sun {
+            position: absolute;
+            width: 70px;
+            height: 70px;
+            background: radial-gradient(circle at 30% 30%, #fff7a0, #f0a030);
+            border-radius: 50%;
+            box-shadow: 0 0 60px rgba(255, 200, 50, 0.4), 0 0 120px rgba(255, 200, 50, 0.15);
+            animation: sunFall 30s linear infinite;
+            opacity: 0.7;
+        }
+        .sun::after {
+            content: '';
+            position: absolute;
+            inset: -10px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 200, 50, 0.1), transparent 70%);
+            animation: sunPulse 4s ease-in-out infinite;
+        }
+
+        .star {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: #fff;
+            border-radius: 50%;
+            animation: starFloat 6s ease-in-out infinite alternate;
+            opacity: 0.6;
+        }
+
+        .floating-orb {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, rgba(124, 108, 240, 0.5), rgba(124, 108, 240, 0.1));
+            box-shadow: 0 0 30px rgba(124, 108, 240, 0.2);
+            animation: floatOrbLight 6s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes moonFall {
+            0% {
+                transform: translateY(-100px) translateX(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.8;
+            }
+            90% {
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(calc(100vh + 100px)) translateX(200px) rotate(180deg);
+                opacity: 0;
+            }
+        }
+
+        @keyframes sunFall {
+            0% {
+                transform: translateY(-120px) translateX(0) rotate(0deg);
+                opacity: 0;
+            }
+            15% {
+                opacity: 0.7;
+            }
+            85% {
+                opacity: 0.7;
+            }
+            100% {
+                transform: translateY(calc(100vh + 120px)) translateX(-200px) rotate(180deg);
+                opacity: 0;
+            }
+        }
+
+        @keyframes sunPulse {
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 0.3;
+            }
+            50% {
+                transform: scale(1.2);
+                opacity: 0.5;
+            }
+        }
+
+        @keyframes starFloat {
+            0% {
+                transform: translateY(0) scale(1);
+                opacity: 0.3;
+            }
+            100% {
+                transform: translateY(-20px) scale(1.3);
+                opacity: 0.8;
+            }
+        }
+
+        @keyframes floatOrbLight {
+            0%,
+            100% {
+                transform: translateY(0) translateX(0) scale(1);
+                opacity: 0.3;
+            }
+            33% {
+                transform: translateY(-12px) translateX(8px) scale(1.05);
+                opacity: 0.6;
+            }
+            66% {
+                transform: translateY(-6px) translateX(-5px) scale(0.95);
+                opacity: 0.4;
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--purple);
+            border-radius: 10px;
+        }
+
+        .app {
+            max-width: 420px;
+            width: 100%;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 4px 16px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+            border-radius: var(--radius);
+            background: rgba(10, 10, 26, 0.5);
+            padding: 12px 16px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, var(--purple), var(--pink));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 900;
+            color: #fff;
+            box-shadow: 0 4px 20px var(--purple-glow);
+            animation: floatOrbLight 4s ease-in-out infinite;
+        }
+
+        .logo-text {
+            font-size: 18px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff 40%, var(--purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-text span {
+            font-weight: 300;
+            -webkit-text-fill-color: var(--text-secondary);
+        }
+
+        .clock {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 6px 14px 6px 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(4px);
+        }
+
+        .clock i {
+            color: var(--purple);
+            font-size: 12px;
+            animation: pulse-dot 1.5s ease-in-out infinite;
+        }
+
+        .clock .time {
+            color: #fff;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: 0.5px;
+            min-width: 64px;
+            text-align: center;
+        }
+
+        @keyframes pulse-dot {
+            0%,
+            100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.2;
+            }
+        }
+
+        /* ===== TABS ===== */
+        .tabs {
+            display: flex;
+            gap: 8px;
+            background: var(--bg-secondary);
+            border-radius: var(--radius);
+            padding: 5px;
+            margin-bottom: 22px;
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
+            background: rgba(18, 18, 42, 0.8);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px 8px;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: transparent;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tab-btn i {
+            font-size: 14px;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, var(--purple), #5a4ad0);
+            color: #fff;
+            box-shadow: 0 4px 20px var(--purple-glow);
+        }
+
+        .tab-btn.active .badge {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+        }
+
+        .tab-btn:not(.active):hover {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .badge {
+            font-size: 10px;
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .tab-btn.active .badge {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        /* ===== PANELS ===== */
+        .panel {
+            display: none;
+            animation: fadeUp 0.4s ease;
+        }
+
+        .panel.active {
+            display: block;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ===== CARDS ===== */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 20px 18px;
+            margin-bottom: 16px;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(10px);
+            animation: floatOrbLight 5s ease-in-out infinite;
+        }
+
+        .card:nth-child(2) {
+            animation-delay: 0.8s;
+        }
+        .card:nth-child(3) {
+            animation-delay: 1.6s;
+        }
+
+        .card-title {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-title i {
+            color: var(--purple);
+            font-size: 16px;
+        }
+
+        .card-sub {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+
+        /* ===== INPUTS ===== */
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 14px;
+        }
+
+        .input-group label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .input-group label i {
+            color: var(--purple);
+            font-size: 12px;
+        }
+
+        .input-wrap {
+            display: flex;
+            align-items: center;
+            background: var(--bg-secondary);
+            border: 1.5px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .input-wrap:focus-within {
+            border-color: var(--purple);
+            box-shadow: 0 0 0 4px var(--purple-glow);
+        }
+
+        .input-wrap input {
+            flex: 1;
+            padding: 12px 14px;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 500;
+            font-family: 'Inter', sans-serif;
+            letter-spacing: 0.5px;
+            min-width: 0;
+        }
+
+        .input-wrap input::placeholder {
+            color: var(--text-muted);
+            font-weight: 400;
+            font-size: 13px;
+        }
+
+        .input-wrap .prefix {
+            padding: 0 6px 0 14px;
+            color: var(--text-muted);
+            font-size: 13px;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .input-wrap .suffix-btn {
+            padding: 0 14px;
+            background: transparent;
+            border: none;
+            color: var(--purple);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s;
+            white-space: nowrap;
+            height: 100%;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-wrap .suffix-btn:hover {
+            color: #a08cff;
+        }
+
+        .input-wrap .suffix-btn:active {
+            transform: scale(0.92);
+        }
+
+        /* ===== BUTTONS ===== */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 13px 24px;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn:active {
+            transform: scale(0.96);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--purple), #5a4ad0);
+            color: #fff;
+            box-shadow: 0 4px 20px var(--purple-glow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px var(--purple-glow);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--green), #4acd8a);
+            color: #0b0b1a;
+            box-shadow: 0 4px 20px rgba(108, 240, 160, 0.25);
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(108, 240, 160, 0.3);
+        }
+
+        .btn-gold {
+            background: linear-gradient(135deg, var(--gold), #e0b84c);
+            color: #0b0b1a;
+            box-shadow: 0 4px 20px var(--gold-glow);
+        }
+
+        .btn-gold:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px var(--gold-glow);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1.5px solid var(--border-color);
+            color: var(--text-secondary);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--purple);
+            color: #fff;
+            background: rgba(124, 108, 240, 0.08);
+        }
+
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 13px;
+            width: auto;
+        }
+
+        .btn-block {
+            width: 100%;
+        }
+
+        .btn-task {
+            background: linear-gradient(135deg, #f0a030, #f06c6c);
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(240, 108, 108, 0.3);
+        }
+
+        .btn-task:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(240, 108, 108, 0.4);
+        }
+
+        .btn-task.completed {
+            background: linear-gradient(135deg, var(--green), #4acd8a);
+            box-shadow: 0 4px 20px rgba(108, 240, 160, 0.3);
+        }
+
+        .btn-tiktok {
+            background: linear-gradient(135deg, #ff0050, #ff6b9d);
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(255, 0, 80, 0.3);
+        }
+
+        .btn-tiktok:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(255, 0, 80, 0.4);
+        }
+
+        .btn-youtube {
+            background: linear-gradient(135deg, #ff0000, #ff4444);
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(255, 0, 0, 0.3);
+        }
+
+        .btn-youtube:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(255, 0, 0, 0.4);
+        }
+
+        /* ===== RECHARGE GRID ===== */
+        .recharge-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin: 12px 0 16px;
+        }
+
+        .recharge-item {
+            background: var(--bg-secondary);
+            border: 1.5px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: 10px 4px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .recharge-item:hover {
+            border-color: var(--purple);
+            background: var(--bg-card-hover);
+            transform: translateY(-2px);
+        }
+
+        .recharge-item.selected {
+            border-color: var(--gold);
+            background: rgba(240, 208, 108, 0.12);
+            box-shadow: 0 0 0 3px var(--gold-glow);
+        }
+
+        .recharge-item .amount {
+            font-size: 16px;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        .recharge-item .amount span {
+            font-size: 12px;
+            font-weight: 400;
+            color: var(--text-muted);
+        }
+
+        .recharge-item .label {
+            font-size: 10px;
+            color: var(--text-muted);
+            margin-top: 2px;
+            font-weight: 500;
+        }
+
+        .recharge-item .check {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            width: 20px;
+            height: 20px;
+            background: var(--gold);
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: #0b0b1a;
+            box-shadow: 0 2px 8px var(--gold-glow);
+        }
+
+        .recharge-item.selected .check {
+            display: flex;
+        }
+
+        /* ===== KEY DISPLAY ===== */
+        .key-display {
+            background: var(--bg-secondary);
+            border: 1.5px dashed var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: 14px 16px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: var(--purple);
+            font-family: 'Inter', monospace;
+            margin: 10px 0 14px;
+            word-break: break-all;
+            min-height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .key-display.has-key {
+            border-color: var(--gold);
+            background: rgba(240, 208, 108, 0.06);
+            color: var(--gold);
+        }
+
+        .key-display .placeholder {
+            color: var(--text-muted);
+            font-weight: 400;
+            font-size: 14px;
+            letter-spacing: 0;
+        }
+
+        /* ===== REFERRAL ===== */
+        .referral-box {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .referral-box .input-wrap {
+            flex: 1;
+        }
+
+        .referral-box .btn {
+            flex-shrink: 0;
+            width: auto;
+            padding: 12px 16px;
+        }
+
+        /* ===== INFO ROW ===== */
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            font-size: 13px;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-row .label {
+            color: var(--text-secondary);
+        }
+
+        .info-row .value {
+            font-weight: 600;
+        }
+
+        /* ===== TOAST ===== */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            width: calc(100% - 32px);
+            max-width: 400px;
+            pointer-events: none;
+        }
+
+        .toast {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: 14px 18px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(12px);
+            pointer-events: all;
+            animation: slideDown 0.4s ease;
+            transition: all 0.3s ease;
+            border-left: 4px solid var(--purple);
+        }
+
+        .toast.success {
+            border-left-color: var(--green);
+        }
+
+        .toast.error {
+            border-left-color: var(--red);
+        }
+
+        .toast.warning {
+            border-left-color: var(--gold);
+        }
+
+        .toast .icon {
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .toast .msg {
+            flex: 1;
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 1.4;
+        }
+
+        .toast .close-toast {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 16px;
+            padding: 4px;
+            transition: all 0.2s;
+        }
+
+        .toast .close-toast:hover {
+            color: #fff;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px) scale(0.96);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* ===== MODAL ===== */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            z-index: 9998;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .modal {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 24px 20px;
+            max-width: 400px;
+            width: 100%;
+            box-shadow: var(--shadow);
+            animation: modalPop 0.35s ease;
+            max-height: 90vh;
+            overflow-y: auto;
+            backdrop-filter: blur(10px);
+        }
+
+        @keyframes modalPop {
+            from {
+                opacity: 0;
+                transform: scale(0.92) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+
+        .modal-header h3 {
+            font-size: 18px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-header h3 i {
+            color: var(--gold);
+        }
+
+        .modal-close {
+            background: var(--bg-secondary);
+            border: none;
+            color: var(--text-secondary);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-close:hover {
+            background: var(--border-color);
+            color: #fff;
+        }
+
+        .modal-body {
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .modal-body .highlight {
+            color: var(--gold);
+            font-weight: 700;
+        }
+
+        .modal-body .bank-info {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-sm);
+            padding: 12px 16px;
+            margin: 8px 0 12px;
+            border-left: 3px solid var(--gold);
+        }
+
+        .modal-body .bank-info p {
+            margin: 4px 0;
+        }
+
+        .modal-body .bank-info .stk {
+            font-size: 18px;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: 2px;
+        }
+
+        .modal-footer {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .modal-footer .btn {
+            flex: 1;
+        }
+
+        /* ===== VIP STATS ===== */
+        .vip-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 12px 0 16px;
+        }
+
+        .vip-stat {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-sm);
+            padding: 12px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(5px);
+        }
+
+        .vip-stat .number {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--gold);
+        }
+
+        .vip-stat .lbl {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 500;
+            margin-top: 2px;
+        }
+
+        /* ===== TASK LIST ===== */
+        .task-item {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-sm);
+            padding: 12px 14px;
+            margin-bottom: 10px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .task-item.completed {
+            border-color: var(--green);
+            background: rgba(108, 240, 160, 0.05);
+        }
+
+        .task-item .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .task-item .task-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            flex: 1;
+        }
+
+        .task-item .task-name {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+
+        .task-item .task-desc {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .task-item .task-reward {
+            font-size: 12px;
+            color: var(--gold);
+            font-weight: 600;
+        }
+
+        .task-item .task-action {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .task-item .task-action .btn {
+            width: auto;
+            padding: 6px 14px;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        .task-item .task-input {
+            display: flex;
+            gap: 6px;
+            margin-top: 4px;
+        }
+
+        .task-item .task-input .input-wrap {
+            flex: 1;
+        }
+
+        .task-item .task-input .input-wrap input {
+            padding: 8px 12px;
+            font-size: 13px;
+        }
+
+        .task-item .task-input .btn {
+            width: auto;
+            padding: 8px 14px;
+            font-size: 12px;
+        }
+
+        .task-item .task-link {
+            font-size: 12px;
+            color: var(--purple);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .task-item .task-link:hover {
+            color: var(--gold);
+            text-decoration: underline;
+        }
+
+        /* ===== FREE VIP KEY SECTION ===== */
+        .free-vip-section {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            border: 1px solid var(--gold);
+            margin-bottom: 16px;
+        }
+
+        .free-vip-section .title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 380px) {
+            .recharge-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .header {
+                flex-direction: column;
+                gap: 12px;
+                align-items: stretch;
+            }
+            .clock {
+                align-self: flex-start;
+            }
+            .referral-box {
+                flex-direction: column;
+            }
+            .referral-box .btn {
+                width: 100%;
+            }
+            .task-item .task-header {
+                flex-wrap: wrap;
+                gap: 6px;
+            }
+            .task-item .task-action .btn {
+                width: 100%;
+            }
+            .task-item .task-input {
+                flex-direction: column;
+            }
+            .task-item .task-input .btn {
+                width: 100%;
+            }
+        }
+
+        @media (min-width: 421px) {
+            body {
+                padding: 24px 16px 40px;
+            }
+            .app {
+                max-width: 460px;
+            }
+        }
+
+        /* ===== LOADER SPINNER ===== */
+        .spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2.5px solid rgba(255, 255, 255, 0.15);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ===== MISC ===== */
+        .text-center {
+            text-align: center;
+        }
+        .mt-8 {
+            margin-top: 8px;
+        }
+        .mt-12 {
+            margin-top: 12px;
+        }
+        .mt-16 {
+            margin-top: 16px;
+        }
+        .gap-8 {
+            gap: 8px;
+        }
+        .flex {
+            display: flex;
+        }
+        .flex-center {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .hidden {
+            display: none !important;
+        }
+        .w-full {
+            width: 100%;
+        }
+
+        /* ===== BUFF OVERLAY ===== */
+        .buff-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.92);
+            z-index: 10000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 20px;
+            pointer-events: none;
+        }
+        .buff-overlay.show {
+            display: flex;
+            pointer-events: auto;
+        }
+        .buff-box {
+            text-align: center;
+            width: 100%;
+            max-width: 500px;
+            pointer-events: auto;
+        }
+        .buff-box .buff-number {
+            font-size: 80px;
+            font-weight: 900;
+            color: #ffd700;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.5), 0 0 60px rgba(255, 215, 0, 0.3);
+            line-height: 1.1;
+            margin-bottom: 8px;
+            letter-spacing: 2px;
+        }
+        .buff-box .buff-number .total {
+            font-size: 40px;
+            color: rgba(255, 255, 255, 0.4);
+            text-shadow: none;
+        }
+        .buff-box .buff-label {
+            font-size: 16px;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+        .buff-box .buff-status-text {
+            font-size: 18px;
+            font-weight: 600;
+            color: #fff;
+            margin-top: 4px;
+        }
+        .buff-box .buff-progress-wrap {
+            width: 100%;
+            height: 6px;
+            background: var(--bg-secondary);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 16px 0 10px;
+        }
+        .buff-box .buff-progress-wrap .bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--purple), var(--gold));
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+        .buff-box .buff-sub {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+        .buff-box .buff-success {
+            display: none;
+            color: var(--green);
+            font-size: 20px;
+            font-weight: 700;
+            margin-top: 10px;
+        }
+        .buff-box .buff-close-btn {
+            margin-top: 20px;
+            display: none;
+        }
+        .buff-box .buff-close-btn.show {
+            display: inline-flex;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== SKY EFFECTS ===== -->
+    <div class="sky-container" id="skyContainer">
+        <div class="moon" style="left: 10%; animation-delay: 0s;"></div>
+        <div class="moon" style="left: 40%; animation-delay: 8s; width: 40px; height: 40px;"></div>
+        <div class="moon" style="left: 70%; animation-delay: 16s; width: 50px; height: 50px;"></div>
+        <div class="sun" style="left: 20%; animation-delay: 3s;"></div>
+        <div class="sun" style="left: 55%; animation-delay: 12s; width: 50px; height: 50px;"></div>
+        <div class="sun" style="left: 85%; animation-delay: 22s; width: 60px; height: 60px;"></div>
+        <div class="star" style="left: 5%; top: 20%; animation-delay: 0.5s;"></div>
+        <div class="star" style="left: 15%; top: 40%; animation-delay: 1.2s;"></div>
+        <div class="star" style="left: 30%; top: 15%; animation-delay: 2s;"></div>
+        <div class="star" style="left: 45%; top: 50%; animation-delay: 0.8s;"></div>
+        <div class="star" style="left: 60%; top: 25%; animation-delay: 1.8s;"></div>
+        <div class="star" style="left: 75%; top: 45%; animation-delay: 0.3s;"></div>
+        <div class="star" style="left: 90%; top: 30%; animation-delay: 1.5s;"></div>
+        <div class="star" style="left: 50%; top: 10%; animation-delay: 2.5s;"></div>
+        <div class="star" style="left: 25%; top: 65%; animation-delay: 1s;"></div>
+        <div class="star" style="left: 80%; top: 70%; animation-delay: 2.2s;"></div>
+        <div class="floating-orb" style="left: 5%; top: 30%; animation-delay: 0s;"></div>
+        <div class="floating-orb" style="left: 90%; top: 50%; animation-delay: 2s; width: 25px; height: 25px;"></div>
+        <div class="floating-orb" style="left: 50%; top: 80%; animation-delay: 4s; width: 15px; height: 15px;"></div>
+        <div class="floating-orb" style="left: 30%; top: 10%; animation-delay: 1.5s; width: 22px; height: 22px;"></div>
+        <div class="floating-orb" style="left: 70%; top: 20%; animation-delay: 3.5s; width: 18px; height: 18px;"></div>
+    </div>
+
+    <div class="app" id="app">
+
+        <!-- ===== HEADER ===== -->
+        <header class="header">
+            <div class="logo">
+                <div class="logo-icon">N</div>
+                <div class="logo-text">Novelah<span>Tool</span></div>
+            </div>
+            <div class="clock" id="clock">
+                <i class="fas fa-circle"></i>
+                <span class="time" id="clockTime">--:--:--</span>
+            </div>
+        </header>
+
+        <!-- ===== TABS ===== -->
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="free">
+                <i class="fas fa-gift"></i> Buff Thường
+                <span class="badge">Free</span>
+            </button>
+            <button class="tab-btn" data-tab="vip">
+                <i class="fas fa-crown"></i> Buff VIP
+                <span class="badge">Premium</span>
+            </button>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- ===== PANEL: BUFF THƯỜNG (FREE) ===== -->
+        <!-- ============================================================ -->
+        <div class="panel active" id="panel-free">
+
+            <div class="card">
+                <div class="card-title">
+                    <i class="fas fa-key"></i> Lấy Key Free
+                </div>
+                <div class="card-sub">
+                    Nhấn nút bên dưới để lấy key Gmail miễn phí dùng cho Buff Thường.
+                </div>
+
+                <div class="input-group">
+                    <label><i class="fas fa-user-friends"></i> Mã mời Novelah</label>
+                    <div class="referral-box">
+                        <div class="input-wrap">
+                            <input type="text" id="refCodeFree" placeholder="Nhập mã mời Novelah" />
+                        </div>
+                        <button class="btn btn-outline btn-sm" id="applyRefFree">
+                            <i class="fas fa-check"></i> Áp
+                        </button>
+                    </div>
+                    <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">
+                        <i class="fas fa-info-circle"></i> Nhập mã mời Novelah của admin để nhận ưu đãi
+                    </div>
+                </div>
+
+                <button class="btn btn-success" id="getKeyFree">
+                    <i class="fas fa-download"></i> Get Key
+                </button>
+
+                <div class="key-display" id="keyDisplayFree">
+                    <span class="placeholder">🔑 Key sẽ xuất hiện tại đây</span>
+                </div>
+
+                <div style="display:flex;gap:8px;margin-top:4px;">
+                    <button class="btn btn-outline btn-sm" id="copyKeyFree" style="flex:1;">
+                        <i class="fas fa-copy"></i> Sao chép
+                    </button>
+                    <button class="btn btn-outline btn-sm" id="clearKeyFree" style="flex:1;">
+                        <i class="fas fa-trash"></i> Xóa
+                    </button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">
+                    <i class="fas fa-rocket"></i> Buff Thường
+                </div>
+                <div class="card-sub">
+                    Nhập key đã lấy và nhấn Buff để bắt đầu quá trình buff.
+                </div>
+
+                <div class="input-group">
+                    <label><i class="fas fa-key"></i> Nhập Key</label>
+                    <div class="input-wrap">
+                        <input type="text" id="buffKeyFree" placeholder="Paste key vào đây..." />
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" id="btnBuffFree">
+                    <i class="fas fa-bolt"></i> Buff Ngay
+                </button>
+
+                <div class="info-row mt-12">
+                    <span class="label"><i class="fas fa-clock"></i> Số đợi chờ</span>
+                    <span class="value" id="freeWaitCount">10.000 - 100.000</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- ===== PANEL: BUFF VIP ===== -->
+        <!-- ============================================================ -->
+        <div class="panel" id="panel-vip">
+
+            <!-- ===== NHẬN KEY VIP FREE - NHIỆM VỤ ===== -->
+            <div class="card" style="border-color: var(--gold);">
+                <div class="card-title">
+                    <i class="fas fa-star" style="color:var(--gold);"></i> Nhiệm vụ nhận Key VIP Free
+                </div>
+                <div class="card-sub">
+                    Hoàn thành nhiệm vụ để nhận Key VIP <strong>miễn phí</strong>!
+                </div>
+
+                <div id="taskList">
+                    <!-- Task 1: Đăng ký YouTube -->
+                    <div class="task-item" data-task="1" id="taskItem1">
+                        <div class="task-header">
+                            <div class="task-info">
+                                <span class="task-name"><i class="fab fa-youtube" style="color:var(--youtube);"></i> Đăng ký YouTube</span>
+                                <span class="task-desc">Đăng ký kênh YouTube Novelah</span>
+                                <a href="https://www.youtube.com/@baonamvietsub" target="_blank" class="task-link">
+                                    <i class="fas fa-external-link-alt"></i> https://www.youtube.com/@baonamvietsub
+                                </a>
+                                <span class="task-reward">🎁 Thưởng: 1 Key VIP</span>
+                            </div>
+                            <div class="task-action">
+                                <button class="btn btn-youtube btn-sm" id="taskBtn1" onclick="completeTask(1)">
+                                    <i class="fas fa-check"></i> Nhận
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Task 2: Chia sẻ TikTok -->
+                    <div class="task-item" data-task="2" id="taskItem2">
+                        <div class="task-header">
+                            <div class="task-info">
+                                <span class="task-name"><i class="fab fa-tiktok" style="color:var(--tiktok);"></i> Chia sẻ TikTok</span>
+                                <span class="task-desc">Chia sẻ tool lên TikTok (200 lượt xem/key)</span>
+                                <span class="task-reward">🎁 Thưởng: 1 Key / 200 views</span>
+                            </div>
+                            <div class="task-action">
+                                <button class="btn btn-tiktok btn-sm" id="taskBtn2" onclick="completeTask(2)">
+                                    <i class="fas fa-check"></i> Nhận
+                                </button>
+                            </div>
+                        </div>
+                        <div class="task-input">
+                            <div class="input-wrap">
+                                <input type="text" id="tiktokLinkInput" placeholder="Dán link TikTok để admin kiểm tra" />
+                            </div>
+                            <button class="btn btn-outline btn-sm" id="submitTiktokLink">
+                                <i class="fas fa-paper-plane"></i> Gửi
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Task 3: Nhập mã mời -->
+                    <div class="task-item" data-task="3" id="taskItem3">
+                        <div class="task-header">
+                            <div class="task-info">
+                                <span class="task-name"><i class="fas fa-user-plus"></i> Nhập mã mời Novelah</span>
+                                <span class="task-desc">Nhập mã mời của admin: <strong style="color:var(--gold);">NOVELAH2025</strong></span>
+                                <span class="task-reward">🎁 Thưởng: 2 Key VIP</span>
+                            </div>
+                            <div class="task-action">
+                                <button class="btn btn-task btn-sm" id="taskBtn3" onclick="completeTask(3)">
+                                    <i class="fas fa-check"></i> Nhận
+                                </button>
+                            </div>
+                        </div>
+                        <div class="task-input">
+                            <div class="input-wrap">
+                                <input type="text" id="nameInput" placeholder="Nhập tên của bạn để admin check" />
+                            </div>
+                            <button class="btn btn-outline btn-sm" id="submitName">
+                                <i class="fas fa-paper-plane"></i> Gửi
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== MỤC NHẬN KEY VIP FREE ===== -->
+            <div class="free-vip-section">
+                <div class="title">
+                    <i class="fas fa-gift"></i> Nhận Key VIP Free
+                </div>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                    <span style="color:var(--text-secondary);font-size:13px;">
+                        <i class="fas fa-key" style="color:var(--gold);"></i>
+                        Key VIP Free có sẵn: <strong id="freeVipKeyCount" style="color:var(--gold);font-size:18px;">0</strong>
+                    </span>
+                    <span style="color:var(--text-secondary);font-size:12px;">
+                        <i class="fas fa-coins"></i> Tổng VIP: <strong id="freeVipTotalDisplay" style="color:var(--gold);">0</strong>
+                    </span>
+                </div>
+                <button class="btn btn-success" id="getFreeVipKey" style="background:linear-gradient(135deg,var(--gold),#e0b84c);color:#0b0b1a;">
+                    <i class="fas fa-gift"></i> Nhận Key VIP Free
+                </button>
+                <div class="key-display" id="freeVipKeyDisplay" style="margin-top:8px;">
+                    <span class="placeholder">🔑 Key VIP Free sẽ xuất hiện tại đây</span>
+                </div>
+                <div style="display:flex;gap:8px;margin-top:4px;">
+                    <button class="btn btn-outline btn-sm" id="copyFreeVipKey" style="flex:1;">
+                        <i class="fas fa-copy"></i> Sao chép
+                    </button>
+                    <button class="btn btn-outline btn-sm" id="clearFreeVipKey" style="flex:1;">
+                        <i class="fas fa-trash"></i> Xóa
+                    </button>
+                </div>
+            </div>
+
+            <!-- ===== NẠP TIỀN VIP ===== -->
+            <div class="card">
+                <div class="card-title">
+                    <i class="fas fa-wallet"></i> Nạp tiền VIP
+                </div>
+                <div class="card-sub">
+                    Chọn gói nạp, mỗi <strong>10.000đ</strong> = 1 Buff (riêng gói 300k = 60 Buff).
+                    <br><span style="color:var(--gold);font-weight:600;">💡 Mỗi lần nạp sẽ cộng dồn số lượt</span>
+                </div>
+
+                <div class="recharge-grid" id="rechargeGrid">
+                    <div class="recharge-item" data-amount="10000" data-buffs="1">
+                        <div class="amount">10<span>k</span></div>
+                        <div class="label">1 Buff</div>
+                        <div class="check"><i class="fas fa-check"></i></div>
+                    </div>
+                    <div class="recharge-item" data-amount="20000" data-buffs="2">
+                        <div class="amount">20<span>k</span></div>
+                        <div class="label">2 Buff</div>
+                        <div class="check"><i class="fas fa-check"></i></div>
+                    </div>
+                    <div class="recharge-item selected" data-amount="30000" data-buffs="3">
+                        <div class="amount">30<span>k</span></div>
+                        <div class="label">3 Buff</div>
+                        <div class="check"><i class="fas fa-check"></i></div>
+                    </div>
+                    <div class="recharge-item" data-amount="40000" data-buffs="4">
+                        <div class="amount">40<span>k</span></div>
+                        <div class="label">4 Buff</div>
+                        <div class="check"><i class="fas fa-check"></i></div>
+                    </div>
+                    <div class="recharge-item" data-amount="50000" data-buffs="5">
+                        <div class="amount">50<span>k</span></div>
+                        <div class="label">5 Buff</div>
+                        <div class="check"><i class="fas fa-check"></i></div>
+                    </div>
+                    <div class="recharge-item" data-amount="300000" data-buffs="60">
+                        <div class="amount">300<span>k</span></div>
+                        <div class="label">60 Buff</div>
+                        <div class="check"><i class="fas fa-check"></i></div>
+                    </div>
+                </div>
+
+                <button class="btn btn-gold" id="btnRecharge">
+                    <i class="fas fa-credit-card"></i> Nạp ngay
+                </button>
+
+                <div class="info-row mt-12">
+                    <span class="label"><i class="fas fa-coins"></i> Số Buff nhận được</span>
+                    <span class="value" id="vipBuffCount">3</span>
+                </div>
+            </div>
+
+            <!-- ===== KEY VIP ===== -->
+            <div class="card">
+                <div class="card-title">
+                    <i class="fas fa-crown"></i> Key VIP
+                </div>
+                <div class="card-sub">
+                    Key VIP sẽ được tạo khi nạp tiền hoặc nhận từ nhiệm vụ.
+                    <br><span style="color:var(--text-muted);font-size:12px;">📌 Key VIP Free và Key VIP nạp tiền đều sử dụng chung</span>
+                </div>
+
+                <div class="key-display" id="keyDisplayVip">
+                    <span class="placeholder">🔑 Key VIP sẽ xuất hiện tại đây</span>
+                </div>
+
+                <div style="display:flex;gap:8px;margin-top:4px;">
+                    <button class="btn btn-outline btn-sm" id="copyKeyVip" style="flex:1;">
+                        <i class="fas fa-copy"></i> Sao chép
+                    </button>
+                    <button class="btn btn-outline btn-sm" id="clearKeyVip" style="flex:1;">
+                        <i class="fas fa-trash"></i> Xóa
+                    </button>
+                </div>
+            </div>
+
+            <!-- ===== BUFF VIP ===== -->
+            <div class="card">
+                <div class="card-title">
+                    <i class="fas fa-bolt"></i> Buff VIP
+                </div>
+                <div class="card-sub">
+                    Nhập key VIP và nhấn Buff để bắt đầu quá trình buff VIP.
+                    <br><span style="color:var(--gold);font-weight:600;">📊 Lượt còn lại: <span id="remainingDisplay">0</span></span>
+                </div>
+
+                <div class="input-group">
+                    <label><i class="fas fa-key"></i> Nhập Key VIP</label>
+                    <div class="input-wrap">
+                        <input type="text" id="buffKeyVip" placeholder="Paste key VIP vào đây..." />
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" id="btnBuffVip" style="background:linear-gradient(135deg,var(--gold),#e0b84c);color:#0b0b1a;box-shadow:0 4px 20px var(--gold-glow);">
+                    <i class="fas fa-crown"></i> Buff VIP Ngay
+                </button>
+
+                <div class="info-row mt-12">
+                    <span class="label"><i class="fas fa-clock"></i> Số đợi chờ</span>
+                    <span class="value" id="vipWaitCount">1 - 1000</span>
+                </div>
+            </div>
+
+            <!-- VIP Stats -->
+            <div class="vip-stats">
+                <div class="vip-stat">
+                    <div class="number" id="vipTotalBuffs">0</div>
+                    <div class="lbl">Tổng Buff VIP</div>
+                </div>
+                <div class="vip-stat">
+                    <div class="number" id="vipRemaining">0</div>
+                    <div class="lbl">Còn lại</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- ===== TOAST CONTAINER ===== -->
+        <!-- ============================================================ -->
+        <div class="toast-container" id="toastContainer"></div>
+
+        <!-- ============================================================ -->
+        <!-- ===== MODAL: RECHARGE ===== -->
+        <!-- ============================================================ -->
+        <div class="modal-overlay" id="rechargeModal">
+            <div class="modal">
+                <div class="modal-header">
+                    <h3><i class="fas fa-credit-card"></i> Nạp tiền VIP</h3>
+                    <button class="modal-close" id="closeRechargeModal"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="modal-body" id="rechargeModalBody">
+                    <p><strong>Thông tin chuyển khoản</strong></p>
+                    <div class="bank-info">
+                        <p><span style="color:var(--text-muted);">Ngân hàng:</span> <strong>MB Bank</strong></p>
+                        <p><span style="color:var(--text-muted);">Số tài khoản:</span> <span class="stk">904092011</span></p>
+                        <p><span style="color:var(--text-muted);">Nội dung:</span> <span class="highlight" id="transferContent">Mã mời của bạn</span></p>
+                    </div>
+                    <p style="margin-top:8px;">Sau khi chuyển tiền, nhập mã code admin cấp để xác nhận:</p>
+                    <div class="input-wrap" style="margin-top:8px;">
+                        <input type="text" id="adminCodeInput" placeholder="Nhập mã code admin" />
+                    </div>
+                    <p style="font-size:12px;color:var(--text-muted);margin-top:6px;">
+                        <i class="fas fa-info-circle"></i> Code do admin tạo, vui lòng liên hệ admin để nhận.
+                    </p>
+                    <div style="margin-top:12px;font-size:13px;">
+                        <span>Gói nạp: <strong id="modalRechargeAmount" style="color:var(--gold);">30.000đ</strong></span>
+                        <span style="margin-left:12px;">Nhận: <strong id="modalRechargeBuffs" style="color:var(--gold);">3</strong> Buff VIP</span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-outline" id="cancelRecharge">Hủy</button>
+                    <button class="btn btn-gold" id="confirmRecharge">
+                        <i class="fas fa-check"></i> Xác nhận
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- ===== MODAL: KEY RESULT ===== -->
+        <!-- ============================================================ -->
+        <div class="modal-overlay" id="keyModal">
+            <div class="modal">
+                <div class="modal-header">
+                    <h3><i class="fas fa-key"></i> Key của bạn</h3>
+                    <button class="modal-close" id="closeKeyModal"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="modal-body">
+                    <div style="background:var(--bg-secondary);border-radius:var(--radius-sm);padding:16px;text-align:center;margin:8px 0 16px;">
+                        <div style="font-size:20px;font-weight:800;color:var(--gold);letter-spacing:2px;font-family:monospace;" id="modalKeyContent">XXXX-XXXX-XXXX</div>
+                    </div>
+                    <p style="font-size:13px;color:var(--text-secondary);">
+                        <i class="fas fa-info-circle"></i> Sao chép key và dùng để Buff. Key có hiệu lực ngay.
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-outline" id="copyKeyModal">
+                        <i class="fas fa-copy"></i> Sao chép
+                    </button>
+                    <button class="btn btn-primary" id="closeKeyModalBtn">OK</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- ===== BUFF PROGRESS OVERLAY ===== -->
+        <!-- ============================================================ -->
+        <div class="buff-overlay" id="buffOverlay">
+            <div class="buff-box">
+                <div class="buff-label" id="buffLabel">Đợi chờ</div>
+                <div class="buff-number" id="buffNumber">
+                    <span id="buffCurrent">0</span>
+                    <span class="total"> / <span id="buffTotal">0</span></span>
+                </div>
+                <div class="buff-status-text" id="buffStatusText">Đang xử lý...</div>
+                <div class="buff-progress-wrap">
+                    <div class="bar" id="buffProgressBar"></div>
+                </div>
+                <div class="buff-sub" id="buffSub">Vui lòng chờ trong giây lát</div>
+                <div class="buff-success" id="buffSuccess">✅ Đã gửi yêu cầu, admin sẽ buff trong 24h tới</div>
+                <button class="btn btn-primary buff-close-btn" id="buffCloseBtn">Đóng</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- ===== JAVASCRIPT ===== -->
+    <!-- ============================================================ -->
+    <script>
+        (function() {
+            'use strict';
+
+            // ===========================================================
+            //  DOM REFS
+            // ===========================================================
+            const $ = (sel, ctx = document) => ctx.querySelector(sel);
+            const $$ = (sel, ctx = document) => [...ctx.querySelectorAll(sel)];
+
+            const clockTime = $('#clockTime');
+            const tabBtns = $$('.tab-btn');
+            const panels = {
+                free: $('#panel-free'),
+                vip: $('#panel-vip'),
+            };
+
+            // Free
+            const refCodeFree = $('#refCodeFree');
+            const applyRefFree = $('#applyRefFree');
+            const getKeyFree = $('#getKeyFree');
+            const keyDisplayFree = $('#keyDisplayFree');
+            const copyKeyFree = $('#copyKeyFree');
+            const clearKeyFree = $('#clearKeyFree');
+            const buffKeyFree = $('#buffKeyFree');
+            const btnBuffFree = $('#btnBuffFree');
+
+            // VIP
+            const rechargeItems = $$('.recharge-item');
+            const vipBuffCount = $('#vipBuffCount');
+            const btnRecharge = $('#btnRecharge');
+            const keyDisplayVip = $('#keyDisplayVip');
+            const copyKeyVip = $('#copyKeyVip');
+            const clearKeyVip = $('#clearKeyVip');
+            const buffKeyVip = $('#buffKeyVip');
+            const btnBuffVip = $('#btnBuffVip');
+            const vipTotalBuffs = $('#vipTotalBuffs');
+            const vipRemaining = $('#vipRemaining');
+            const remainingDisplay = $('#remainingDisplay');
+
+            // Free VIP Key
+            const getFreeVipKeyBtn = $('#getFreeVipKey');
+            const freeVipKeyDisplay = $('#freeVipKeyDisplay');
+            const copyFreeVipKey = $('#copyFreeVipKey');
+            const clearFreeVipKey = $('#clearFreeVipKey');
+            const freeVipKeyCount = $('#freeVipKeyCount');
+            const freeVipTotalDisplay = $('#freeVipTotalDisplay');
+
+            // Task inputs
+            const tiktokLinkInput = $('#tiktokLinkInput');
+            const submitTiktokLink = $('#submitTiktokLink');
+            const nameInput = $('#nameInput');
+            const submitName = $('#submitName');
+
+            // Modals
+            const rechargeModal = $('#rechargeModal');
+            const closeRechargeModal = $('#closeRechargeModal');
+            const cancelRecharge = $('#cancelRecharge');
+            const confirmRecharge = $('#confirmRecharge');
+            const modalRechargeAmount = $('#modalRechargeAmount');
+            const modalRechargeBuffs = $('#modalRechargeBuffs');
+            const adminCodeInput = $('#adminCodeInput');
+            const transferContent = $('#transferContent');
+
+            const keyModal = $('#keyModal');
+            const closeKeyModal = $('#closeKeyModal');
+            const closeKeyModalBtn = $('#closeKeyModalBtn');
+            const modalKeyContent = $('#modalKeyContent');
+            const copyKeyModal = $('#copyKeyModal');
+
+            const toastContainer = $('#toastContainer');
+
+            // Buff Overlay
+            const buffOverlay = $('#buffOverlay');
+            const buffNumber = $('#buffNumber');
+            const buffCurrent = $('#buffCurrent');
+            const buffTotal = $('#buffTotal');
+            const buffLabel = $('#buffLabel');
+            const buffStatusText = $('#buffStatusText');
+            const buffProgressBar = $('#buffProgressBar');
+            const buffSub = $('#buffSub');
+            const buffSuccess = $('#buffSuccess');
+            const buffCloseBtn = $('#buffCloseBtn');
+
+            // ===========================================================
+            //  STATE
+            // ===========================================================
+            let state = {
+                freeKey: '',
+                refCode: '',
+                selectedAmount: 30000,
+                selectedBuffs: 3,
+                vipKey: '',
+                vipBuffs: 0,
+                vipUsed: 0,
+                isBuffing: false,
+                completedTasks: [],
+                freeVipKeys: 0,
+                currentFreeVipKey: '',
+                totalFreeVipEarned: 0,
+                taskStatus: {
+                    1: false,
+                    2: false,
+                    3: false
+                }
+            };
+
+            // ===========================================================
+            //  CLOCK
+            // ===========================================================
+            function updateClock() {
+                const now = new Date();
+                const h = String(now.getHours()).padStart(2, '0');
+                const m = String(now.getMinutes()).padStart(2, '0');
+                const s = String(now.getSeconds()).padStart(2, '0');
+                clockTime.textContent = `${h}:${m}:${s}`;
+            }
+            updateClock();
+            setInterval(updateClock, 1000);
+
+            // ===========================================================
+            //  TOAST
+            // ===========================================================
+            function showToast(message, type = 'info', duration = 3500) {
+                const icons = {
+                    success: '✅',
+                    error: '❌',
+                    warning: '⚠️',
+                    info: 'ℹ️',
+                };
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                toast.innerHTML = `
+              <span class="icon">${icons[type] || 'ℹ️'}</span>
+              <span class="msg">${message}</span>
+              <button class="close-toast"><i class="fas fa-times"></i></button>
+            `;
+                toastContainer.appendChild(toast);
+
+                const close = () => {
+                    toast.style.opacity = '0';
+                    toast.style.transform = 'translateX(40px)';
+                    setTimeout(() => toast.remove(), 300);
+                };
+
+                toast.querySelector('.close-toast').addEventListener('click', close);
+                setTimeout(close, duration);
+
+                return toast;
+            }
+
+            // ===========================================================
+            //  UTILITY
+            // ===========================================================
+            function formatCurrency(amount) {
+                return amount.toLocaleString('vi-VN') + 'đ';
+            }
+
+            function copyToClipboard(text) {
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(text).then(() => {
+                        showToast('Đã sao chép vào clipboard!', 'success');
+                    }).catch(() => {
+                        fallbackCopy(text);
+                    });
+                } else {
+                    fallbackCopy(text);
+                }
+            }
+
+            function fallbackCopy(text) {
+                const el = document.createElement('textarea');
+                el.value = text;
+                document.body.appendChild(el);
+                el.select();
+                try {
+                    document.execCommand('copy');
+                    showToast('Đã sao chép vào clipboard!', 'success');
+                } catch (e) {
+                    showToast('Không thể sao chép, vui lòng copy thủ công.', 'error');
+                }
+                document.body.removeChild(el);
+            }
+
+            function getRandomInt(min, max) {
+                return Math.floor(Math.random() * (max - min + 1)) + min;
+            }
+
+            function generateKey(prefix = 'VIP') {
+                const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+                let key = prefix;
+                for (let i = 0; i < 12; i++) {
+                    if (i > 0 && i % 4 === 0) key += '-';
+                    key += chars.charAt(Math.floor(Math.random() * chars.length));
+                }
+                return key;
+            }
+
+            // ===========================================================
+            //  UPDATE VIP STATS
+            // ===========================================================
+            function updateVipStats() {
+                const total = state.vipBuffs + state.freeVipKeys;
+                const used = state.vipUsed;
+                const remaining = total - used;
+                vipTotalBuffs.textContent = total;
+                vipRemaining.textContent = Math.max(0, remaining);
+                remainingDisplay.textContent = Math.max(0, remaining);
+                vipBuffCount.textContent = state.selectedBuffs;
+                freeVipKeyCount.textContent = state.freeVipKeys;
+                freeVipTotalDisplay.textContent = state.freeVipKeys;
+            }
+
+            // ===========================================================
+            //  TASK SYSTEM - SỬA LỖI KEY VIP FREE
+            // ===========================================================
+            window.completeTask = function(taskId) {
+                if (state.completedTasks.includes(taskId)) {
+                    showToast('Nhiệm vụ này đã hoàn thành!', 'warning');
+                    return;
+                }
+
+                // Kiểm tra task 1: YouTube
+                if (taskId === 1) {
+                    // Mở link YouTube trong tab mới
+                    window.open('https://www.youtube.com/@baonamvietsub', '_blank');
+                    // Cho phép nhận key ngay
+                }
+
+                // Kiểm tra task 2: TikTok - yêu cầu nhập link
+                if (taskId === 2) {
+                    const link = tiktokLinkInput.value.trim();
+                    if (!link) {
+                        showToast('Vui lòng dán link TikTok của bạn!', 'warning');
+                        return;
+                    }
+                    showToast('✅ Đã gửi link TikTok để admin kiểm tra!', 'success');
+                }
+
+                // Kiểm tra task 3: Nhập mã mời - yêu cầu nhập tên
+                if (taskId === 3) {
+                    const name = nameInput.value.trim();
+                    if (!name) {
+                        showToast('Vui lòng nhập tên của bạn!', 'warning');
+                        return;
+                    }
+                    const refCode = refCodeFree.value.trim().toUpperCase();
+                    if (refCode !== 'NOVELAH2025') {
+                        showToast('❌ Mã mời không đúng! Vui lòng nhập NOVELAH2025', 'error');
+                        return;
+                    }
+                    showToast(`✅ Đã gửi tên "${name}" để admin kiểm tra!`, 'success');
+                }
+
+                const taskBtn = document.getElementById(`taskBtn${taskId}`);
+                const taskItem = document.querySelector(`.task-item[data-task="${taskId}"]`);
+
+                // Đánh dấu hoàn thành
+                state.completedTasks.push(taskId);
+                state.taskStatus[taskId] = true;
+                taskItem.classList.add('completed');
+
+                // Cập nhật nút
+                taskBtn.innerHTML = '<i class="fas fa-check-circle"></i> Đã nhận';
+                taskBtn.classList.add('completed');
+                taskBtn.disabled = true;
+
+                // Thêm key VIP Free
+                let reward = 1;
+                if (taskId === 3) reward = 2;
+
+                // CỘNG DỒN KEY VIP FREE - SỬA LỖI
+                state.freeVipKeys += reward;
+                state.totalFreeVipEarned += reward;
+                updateVipStats();
+
+                showToast(`🎉 Hoàn thành nhiệm vụ! Nhận ${reward} Key VIP Free!`, 'success', 4000);
+
+                // Tạo key VIP mới nếu có
+                if (state.freeVipKeys > 0) {
+                    const newKey = generateKey('FREE');
+                    state.currentFreeVipKey = newKey;
+                    freeVipKeyDisplay.textContent = newKey;
+                    freeVipKeyDisplay.className = 'key-display has-key';
+                    // Cập nhật cả key VIP chính - SỬA LỖI KHÔNG SÀI ĐƯỢC
+                    state.vipKey = newKey;
+                    keyDisplayVip.textContent = newKey;
+                    keyDisplayVip.className = 'key-display has-key';
+                    showToast(`🔑 Key VIP Free đã sẵn sàng!`, 'success', 2000);
+                }
+            };
+
+            // ===========================================================
+            //  SUBMIT TIKTOK LINK
+            // ===========================================================
+            submitTiktokLink.addEventListener('click', function() {
+                const link = tiktokLinkInput.value.trim();
+                if (!link) {
+                    showToast('Vui lòng dán link TikTok của bạn!', 'warning');
+                    return;
+                }
+                showToast(`✅ Đã gửi link TikTok để admin kiểm tra: ${link}`, 'success');
+            });
+
+            // ===========================================================
+            //  SUBMIT NAME
+            // ===========================================================
+            submitName.addEventListener('click', function() {
+                const name = nameInput.value.trim();
+                if (!name) {
+                    showToast('Vui lòng nhập tên của bạn!', 'warning');
+                    return;
+                }
+                const refCode = refCodeFree.value.trim().toUpperCase();
+                if (refCode !== 'NOVELAH2025') {
+                    showToast('❌ Mã mời không đúng! Vui lòng nhập NOVELAH2025', 'error');
+                    return;
+                }
+                showToast(`✅ Đã gửi tên "${name}" để admin kiểm tra!`, 'success');
+            });
+
+            // ===========================================================
+            //  FREE VIP KEY - SỬA LỖI KHÔNG SÀI ĐƯỢC
+            // ===========================================================
+            getFreeVipKeyBtn.addEventListener('click', function() {
+                if (state.freeVipKeys <= 0) {
+                    showToast('Bạn chưa có Key VIP Free nào! Hãy hoàn thành nhiệm vụ.', 'warning');
+                    return;
+                }
+
+                const key = generateKey('FREE');
+                state.currentFreeVipKey = key;
+                state.freeVipKeys--;
+                // Thêm vào tổng VIP Buff (cộng dồn)
+                state.vipBuffs += 1;
+                updateVipStats();
+
+                freeVipKeyDisplay.textContent = key;
+                freeVipKeyDisplay.className = 'key-display has-key';
+
+                // Cập nhật key VIP chính - ĐẢM BẢO SÀI ĐƯỢC
+                state.vipKey = key;
+                keyDisplayVip.textContent = key;
+                keyDisplayVip.className = 'key-display has-key';
+
+                showToast(`🎉 Nhận Key VIP Free thành công! Còn ${state.freeVipKeys} key.`, 'success', 3000);
+
+                // Hiện modal key
+                modalKeyContent.textContent = key;
+                keyModal.classList.add('show');
+            });
+
+            copyFreeVipKey.addEventListener('click', function() {
+                const key = freeVipKeyDisplay.textContent;
+                if (!key || key.includes('xuất hiện')) {
+                    showToast('Chưa có key để sao chép!', 'warning');
+                    return;
+                }
+                copyToClipboard(key);
+            });
+
+            clearFreeVipKey.addEventListener('click', function() {
+                state.currentFreeVipKey = '';
+                freeVipKeyDisplay.textContent = '🔑 Key VIP Free sẽ xuất hiện tại đây';
+                freeVipKeyDisplay.className = 'key-display';
+                showToast('Đã xóa key', 'info');
+            });
+
+            // ===========================================================
+            //  BUFF PROCESS
+            // ===========================================================
+            function startBuffProcess(type, btnElement) {
+                if (state.isBuffing) {
+                    showToast('Đang có một tiến trình buff chạy, vui lòng đợi!', 'warning');
+                    return;
+                }
+
+                btnElement.disabled = true;
+                state.isBuffing = true;
+
+                buffOverlay.classList.add('show');
+                buffCurrent.textContent = '0';
+                buffTotal.textContent = '0';
+                buffProgressBar.style.width = '0%';
+                buffStatusText.textContent = 'Đang khởi tạo...';
+                buffSub.textContent = 'Vui lòng chờ trong giây lát';
+                buffSuccess.style.display = 'none';
+                buffCloseBtn.style.display = 'none';
+                buffCloseBtn.classList.remove('show');
+
+                let maxCount, label;
+                if (type === 'free') {
+                    maxCount = getRandomInt(10000, 100000);
+                    label = 'Buff Thường';
+                } else {
+                    maxCount = getRandomInt(1, 1000);
+                    label = 'Buff VIP';
+                }
+
+                buffLabel.textContent = `${label}`;
+                buffTotal.textContent = maxCount;
+
+                let current = 0;
+                const step = Math.max(1, Math.floor(maxCount / 80));
+
+                const interval = setInterval(() => {
+                    current += step;
+                    if (current > maxCount) current = maxCount;
+
+                    const percent = (current / maxCount) * 100;
+                    buffProgressBar.style.width = percent + '%';
+                    buffCurrent.textContent = current;
+
+                    if (current < maxCount * 0.7) {
+                        buffStatusText.textContent = `Đang buff... ${current}/${maxCount}`;
+                    } else if (current < maxCount) {
+                        buffStatusText.textContent = `Gần xong... ${current}/${maxCount}`;
+                    }
+
+                    if (current >= maxCount) {
+                        clearInterval(interval);
+                        buffStatusText.textContent = '✅ Hoàn tất';
+                        buffProgressBar.style.width = '100%';
+                        buffSub.textContent = 'Admin sẽ xử lý yêu cầu của bạn trong 24h tới';
+                        buffSuccess.style.display = 'block';
+                        buffCloseBtn.style.display = 'inline-flex';
+                        buffCloseBtn.classList.add('show');
+
+                        showToast(`📨 Đã gửi yêu cầu ${label}, admin sẽ buff trong 24h tới.`, 'success', 4000);
+
+                        if (type === 'free') {
+                            state.freeKey = '';
+                            keyDisplayFree.textContent = '🔑 Key sẽ xuất hiện tại đây';
+                            keyDisplayFree.className = 'key-display';
+                            buffKeyFree.value = '';
+                        } else {
+                            // Kiểm tra tổng số buff VIP (bao gồm cả free và nạp)
+                            const totalBuffs = state.vipBuffs + state.freeVipKeys;
+                            if (totalBuffs > state.vipUsed) {
+                                state.vipUsed++;
+                                updateVipStats();
+                            }
+                            state.vipKey = '';
+                            keyDisplayVip.textContent = '🔑 Key VIP sẽ xuất hiện sau khi nạp hoặc nhận nhiệm vụ';
+                            keyDisplayVip.className = 'key-display';
+                            buffKeyVip.value = '';
+                            // Xóa cả free key display nếu đang hiển thị key đó
+                            freeVipKeyDisplay.textContent = '🔑 Key VIP Free sẽ xuất hiện tại đây';
+                            freeVipKeyDisplay.className = 'key-display';
+                            state.currentFreeVipKey = '';
+                        }
+
+                        btnElement.disabled = false;
+                        state.isBuffing = false;
+                    }
+                }, 30);
+            }
+
+            // ===========================================================
+            //  TABS
+            // ===========================================================
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    if (state.isBuffing) return;
+                    tabBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    const tab = this.dataset.tab;
+                    Object.keys(panels).forEach(key => {
+                        panels[key].classList.toggle('active', key === tab);
+                    });
+                });
+            });
+
+            // ===========================================================
+            //  FREE PANEL
+            // ===========================================================
+
+            applyRefFree.addEventListener('click', function() {
+                const code = refCodeFree.value.trim().toUpperCase();
+                if (!code) {
+                    showToast('Vui lòng nhập mã mời!', 'warning');
+                    return;
+                }
+                state.refCode = code;
+                if (code === 'NOVELAH2025') {
+                    showToast('✅ Mã mời hợp lệ! Bạn có thể nhận nhiệm vụ nhập mã mời.', 'success');
+                } else {
+                    showToast(`Đã áp dụng mã mời: ${code}`, 'info');
+                }
+            });
+
+            refCodeFree.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') applyRefFree.click();
+            });
+
+            getKeyFree.addEventListener('click', function() {
+                if (state.isBuffing) return;
+                const key = 'namdz12345';
+                state.freeKey = key;
+                keyDisplayFree.textContent = key;
+                keyDisplayFree.className = 'key-display has-key';
+                showToast('Key Free đã được tạo!', 'success');
+            });
+
+            copyKeyFree.addEventListener('click', function() {
+                if (!state.freeKey) {
+                    showToast('Chưa có key để sao chép!', 'warning');
+                    return;
+                }
+                copyToClipboard(state.freeKey);
+            });
+
+            clearKeyFree.addEventListener('click', function() {
+                state.freeKey = '';
+                keyDisplayFree.textContent = '🔑 Key sẽ xuất hiện tại đây';
+                keyDisplayFree.className = 'key-display';
+                buffKeyFree.value = '';
+                showToast('Đã xóa key', 'info');
+            });
+
+            btnBuffFree.addEventListener('click', function() {
+                const key = buffKeyFree.value.trim();
+                if (!key) {
+                    showToast('Vui lòng nhập key!', 'warning');
+                    return;
+                }
+                if (key !== state.freeKey) {
+                    showToast('Key không hợp lệ! Vui lòng kiểm tra lại.', 'error');
+                    return;
+                }
+                startBuffProcess('free', btnBuffFree);
+            });
+
+            // ===========================================================
+            //  VIP PANEL
+            // ===========================================================
+
+            rechargeItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    if (state.isBuffing) return;
+                    rechargeItems.forEach(i => i.classList.remove('selected'));
+                    this.classList.add('selected');
+                    const amount = parseInt(this.dataset.amount, 10);
+                    const buffs = parseInt(this.dataset.buffs, 10);
+                    state.selectedAmount = amount;
+                    state.selectedBuffs = buffs;
+                    vipBuffCount.textContent = buffs;
+                });
+            });
+
+            btnRecharge.addEventListener('click', function() {
+                if (state.isBuffing) {
+                    showToast('Đang có tiến trình buff, vui lòng đợi!', 'warning');
+                    return;
+                }
+                const amount = state.selectedAmount;
+                const buffs = state.selectedBuffs;
+                modalRechargeAmount.textContent = formatCurrency(amount);
+                modalRechargeBuffs.textContent = buffs;
+                transferContent.textContent = state.refCode || 'Mã mời của bạn (nếu có)';
+                adminCodeInput.value = '';
+                rechargeModal.classList.add('show');
+            });
+
+            function closeRechargeModalFn() {
+                rechargeModal.classList.remove('show');
+            }
+            closeRechargeModal.addEventListener('click', closeRechargeModalFn);
+            cancelRecharge.addEventListener('click', closeRechargeModalFn);
+            rechargeModal.addEventListener('click', function(e) {
+                if (e.target === this) closeRechargeModalFn();
+            });
+
+            confirmRecharge.addEventListener('click', function() {
+                const adminCode = adminCodeInput.value.trim();
+                if (!adminCode) {
+                    showToast('Vui lòng nhập mã code admin!', 'warning');
+                    return;
+                }
+                const buffs = state.selectedBuffs;
+                const vipKey = generateKey('VIP');
+                state.vipKey = vipKey;
+                state.vipBuffs += buffs;
+
+                keyDisplayVip.textContent = vipKey;
+                keyDisplayVip.className = 'key-display has-key';
+
+                updateVipStats();
+
+                closeRechargeModalFn();
+                showToast(`🎉 Nạp thành công! Nhận ${buffs} Buff VIP. Tổng: ${state.vipBuffs} lượt.`, 'success', 4000);
+
+                modalKeyContent.textContent = vipKey;
+                keyModal.classList.add('show');
+            });
+
+            copyKeyVip.addEventListener('click', function() {
+                if (!state.vipKey) {
+                    showToast('Chưa có key VIP! Hãy nạp tiền hoặc nhận nhiệm vụ.', 'warning');
+                    return;
+                }
+                copyToClipboard(state.vipKey);
+            });
+
+            clearKeyVip.addEventListener('click', function() {
+                state.vipKey = '';
+                keyDisplayVip.textContent = '🔑 Key VIP sẽ xuất hiện sau khi nạp hoặc nhận nhiệm vụ';
+                keyDisplayVip.className = 'key-display';
+                buffKeyVip.value = '';
+                showToast('Đã xóa key VIP', 'info');
+            });
+
+            btnBuffVip.addEventListener('click', function() {
+                const key = buffKeyVip.value.trim();
+                if (!key) {
+                    showToast('Vui lòng nhập key VIP!', 'warning');
+                    return;
+                }
+                if (key !== state.vipKey) {
+                    showToast('Key VIP không hợp lệ!', 'error');
+                    return;
+                }
+                const totalBuffs = state.vipBuffs + state.freeVipKeys;
+                const remaining = totalBuffs - state.vipUsed;
+                if (remaining <= 0) {
+                    showToast('Bạn đã sử dụng hết số Buff VIP. Vui lòng nạp thêm hoặc nhận nhiệm vụ!', 'error');
+                    return;
+                }
+                startBuffProcess('vip', btnBuffVip);
+            });
+
+            // ===========================================================
+            //  KEY MODAL
+            // ===========================================================
+            function closeKeyModalFn() {
+                keyModal.classList.remove('show');
+            }
+            closeKeyModal.addEventListener('click', closeKeyModalFn);
+            closeKeyModalBtn.addEventListener('click', closeKeyModalFn);
+            keyModal.addEventListener('click', function(e) {
+                if (e.target === this) closeKeyModalFn();
+            });
+
+            copyKeyModal.addEventListener('click', function() {
+                const text = modalKeyContent.textContent;
+                if (text) copyToClipboard(text);
+            });
+
+            // ===========================================================
+            //  AUTO-FILL KEY ON CLICK DISPLAY
+            // ===========================================================
+            keyDisplayFree.addEventListener('click', function() {
+                if (state.freeKey) {
+                    buffKeyFree.value = state.freeKey;
+                    showToast('Đã điền key vào ô nhập', 'info');
+                }
+            });
+
+            keyDisplayVip.addEventListener('click', function() {
+                if (state.vipKey) {
+                    buffKeyVip.value = state.vipKey;
+                    showToast('Đã điền key VIP vào ô nhập', 'info');
+                }
+            });
+
+            freeVipKeyDisplay.addEventListener('click', function() {
+                const key = freeVipKeyDisplay.textContent;
+                if (key && !key.includes('xuất hiện')) {
+                    buffKeyVip.value = key;
+                    showToast('Đã điền key VIP Free vào ô nhập', 'info');
+                }
+            });
+
+            // ===========================================================
+            //  CLOSE BUFF OVERLAY
+            // ===========================================================
+            buffCloseBtn.addEventListener('click', function() {
+                buffOverlay.classList.remove('show');
+                if (state.isBuffing) {
+                    state.isBuffing = false;
+                    btnBuffFree.disabled = false;
+                    btnBuffVip.disabled = false;
+                }
+            });
+
+            // ===========================================================
+            //  INIT
+            // ===========================================================
+            vipBuffCount.textContent = '3';
+            updateVipStats();
+
+            console.log('🚀 Novelah Tool loaded successfully!');
+            console.log('📌 Key Free: namdz12345');
+            console.log('📌 Key VIP: Tự động tạo khi nạp hoặc nhận nhiệm vụ');
+            console.log('🔒 Mỗi key chỉ dùng 1 lần, phải get key mới sau khi buff.');
+            console.log('💰 Gói 300k = 60 Buff VIP');
+            console.log('🔄 Cộng dồn số lượt VIP khi nạp nhiều lần');
+            console.log('⭐ Nhiệm vụ: YouTube, TikTok (dán link), Nhập mã mời NOVELAH2025 (nhập tên)');
+
+        })();
+    </script>
+
+</body>
+</html>
