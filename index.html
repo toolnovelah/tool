@@ -1376,7 +1376,7 @@
                     <i class="fas fa-key"></i> Lấy Key Free
                 </div>
                 <div class="card-sub">
-                    Nhấn nút bên dưới để lấy key Gmail miễn phí dùng cho Buff Thường.
+                    Nhấn nút bên dưới để lấy key miễn phí dùng cho Buff Thường. Mỗi key chỉ dùng 1 lần.
                 </div>
 
                 <div class="input-group">
@@ -1847,6 +1847,26 @@
             const buffCloseBtn = $('#buffCloseBtn');
 
             // ===========================================================
+            //  DANH SÁCH LINK GET KEY
+            // ===========================================================
+            const getKeyLinks = [
+                'https://link4m.org/QpcUA',
+                'https://link4m.net/q93pk',
+                'https://link4m.net/wL2VHfzf',
+                'https://link4m.net/ZxOKu8u'
+            ];
+
+            // ===========================================================
+            //  DANH SÁCH KEY CÓ SẴN (DÙNG 1 LẦN)
+            // ===========================================================
+            const keyPool = [
+                'A7XQ-9MPL-K4ZT',
+                'F2RW-H8YN-P6CV',
+                'Q9KD-X3LP-W7MA',
+                'N5TZ-B4QY-R8XC'
+            ];
+
+            // ===========================================================
             //  STATE
             // ===========================================================
             let state = {
@@ -1862,6 +1882,7 @@
                 freeVipKeys: 0,
                 currentFreeVipKey: '',
                 totalFreeVipEarned: 0,
+                usedKeys: [], // Danh sách key đã dùng
                 taskStatus: {
                     1: false,
                     2: false,
@@ -1895,10 +1916,10 @@
                 const toast = document.createElement('div');
                 toast.className = `toast ${type}`;
                 toast.innerHTML = `
-              <span class="icon">${icons[type] || 'ℹ️'}</span>
-              <span class="msg">${message}</span>
-              <button class="close-toast"><i class="fas fa-times"></i></button>
-            `;
+                    <span class="icon">${icons[type] || 'ℹ️'}</span>
+                    <span class="msg">${message}</span>
+                    <button class="close-toast"><i class="fas fa-times"></i></button>
+                `;
                 toastContainer.appendChild(toast);
 
                 const close = () => {
@@ -1961,6 +1982,19 @@
             }
 
             // ===========================================================
+            //  LẤY KEY TỪ POOL (NGẪU NHIÊN, 1 LẦN)
+            // ===========================================================
+            function getAvailableKey() {
+                const available = keyPool.filter(k => !state.usedKeys.includes(k));
+                if (available.length === 0) {
+                    showToast('❌ Đã hết key! Vui lòng thử lại sau.', 'error');
+                    return null;
+                }
+                const randomIndex = Math.floor(Math.random() * available.length);
+                return available[randomIndex];
+            }
+
+            // ===========================================================
             //  UPDATE VIP STATS
             // ===========================================================
             function updateVipStats() {
@@ -1976,7 +2010,7 @@
             }
 
             // ===========================================================
-            //  TASK SYSTEM - SỬA LỖI KEY VIP FREE
+            //  TASK SYSTEM
             // ===========================================================
             window.completeTask = function(taskId) {
                 if (state.completedTasks.includes(taskId)) {
@@ -1986,12 +2020,10 @@
 
                 // Kiểm tra task 1: YouTube
                 if (taskId === 1) {
-                    // Mở link YouTube trong tab mới
                     window.open('https://www.youtube.com/@baonamvietsub', '_blank');
-                    // Cho phép nhận key ngay
                 }
 
-                // Kiểm tra task 2: TikTok - yêu cầu nhập link
+                // Kiểm tra task 2: TikTok
                 if (taskId === 2) {
                     const link = tiktokLinkInput.value.trim();
                     if (!link) {
@@ -2001,7 +2033,7 @@
                     showToast('✅ Đã gửi link TikTok để admin kiểm tra!', 'success');
                 }
 
-                // Kiểm tra task 3: Nhập mã mời - yêu cầu nhập tên
+                // Kiểm tra task 3: Nhập mã mời
                 if (taskId === 3) {
                     const name = nameInput.value.trim();
                     if (!name) {
@@ -2019,34 +2051,28 @@
                 const taskBtn = document.getElementById(`taskBtn${taskId}`);
                 const taskItem = document.querySelector(`.task-item[data-task="${taskId}"]`);
 
-                // Đánh dấu hoàn thành
                 state.completedTasks.push(taskId);
                 state.taskStatus[taskId] = true;
                 taskItem.classList.add('completed');
 
-                // Cập nhật nút
                 taskBtn.innerHTML = '<i class="fas fa-check-circle"></i> Đã nhận';
                 taskBtn.classList.add('completed');
                 taskBtn.disabled = true;
 
-                // Thêm key VIP Free
                 let reward = 1;
                 if (taskId === 3) reward = 2;
 
-                // CỘNG DỒN KEY VIP FREE - SỬA LỖI
                 state.freeVipKeys += reward;
                 state.totalFreeVipEarned += reward;
                 updateVipStats();
 
                 showToast(`🎉 Hoàn thành nhiệm vụ! Nhận ${reward} Key VIP Free!`, 'success', 4000);
 
-                // Tạo key VIP mới nếu có
                 if (state.freeVipKeys > 0) {
                     const newKey = generateKey('FREE');
                     state.currentFreeVipKey = newKey;
                     freeVipKeyDisplay.textContent = newKey;
                     freeVipKeyDisplay.className = 'key-display has-key';
-                    // Cập nhật cả key VIP chính - SỬA LỖI KHÔNG SÀI ĐƯỢC
                     state.vipKey = newKey;
                     keyDisplayVip.textContent = newKey;
                     keyDisplayVip.className = 'key-display has-key';
@@ -2084,7 +2110,7 @@
             });
 
             // ===========================================================
-            //  FREE VIP KEY - SỬA LỖI KHÔNG SÀI ĐƯỢC
+            //  FREE VIP KEY
             // ===========================================================
             getFreeVipKeyBtn.addEventListener('click', function() {
                 if (state.freeVipKeys <= 0) {
@@ -2095,21 +2121,18 @@
                 const key = generateKey('FREE');
                 state.currentFreeVipKey = key;
                 state.freeVipKeys--;
-                // Thêm vào tổng VIP Buff (cộng dồn)
                 state.vipBuffs += 1;
                 updateVipStats();
 
                 freeVipKeyDisplay.textContent = key;
                 freeVipKeyDisplay.className = 'key-display has-key';
 
-                // Cập nhật key VIP chính - ĐẢM BẢO SÀI ĐƯỢC
                 state.vipKey = key;
                 keyDisplayVip.textContent = key;
                 keyDisplayVip.className = 'key-display has-key';
 
                 showToast(`🎉 Nhận Key VIP Free thành công! Còn ${state.freeVipKeys} key.`, 'success', 3000);
 
-                // Hiện modal key
                 modalKeyContent.textContent = key;
                 keyModal.classList.add('show');
             });
@@ -2127,6 +2150,48 @@
                 state.currentFreeVipKey = '';
                 freeVipKeyDisplay.textContent = '🔑 Key VIP Free sẽ xuất hiện tại đây';
                 freeVipKeyDisplay.className = 'key-display';
+                showToast('Đã xóa key', 'info');
+            });
+
+            // ===========================================================
+            //  GET KEY FREE - LẤY KEY TỪ POOL + MỞ LINK RANDOM
+            // ===========================================================
+            getKeyFree.addEventListener('click', function() {
+                if (state.isBuffing) return;
+
+                // Mở link random trong tab mới
+                const randomLinkIndex = Math.floor(Math.random() * getKeyLinks.length);
+                const link = getKeyLinks[randomLinkIndex];
+                window.open(link, '_blank');
+
+                // Lấy key từ pool
+                const key = getAvailableKey();
+                if (!key) {
+                    showToast('❌ Đã hết key! Vui lòng thử lại sau.', 'error');
+                    return;
+                }
+
+                // Đánh dấu key đã dùng
+                state.usedKeys.push(key);
+                state.freeKey = key;
+                keyDisplayFree.textContent = key;
+                keyDisplayFree.className = 'key-display has-key';
+                showToast(`🔑 Key Free: ${key} (Đã mở link)`, 'success', 3000);
+            });
+
+            copyKeyFree.addEventListener('click', function() {
+                if (!state.freeKey) {
+                    showToast('Chưa có key để sao chép!', 'warning');
+                    return;
+                }
+                copyToClipboard(state.freeKey);
+            });
+
+            clearKeyFree.addEventListener('click', function() {
+                state.freeKey = '';
+                keyDisplayFree.textContent = '🔑 Key sẽ xuất hiện tại đây';
+                keyDisplayFree.className = 'key-display';
+                buffKeyFree.value = '';
                 showToast('Đã xóa key', 'info');
             });
 
@@ -2193,12 +2258,12 @@
                         showToast(`📨 Đã gửi yêu cầu ${label}, admin sẽ buff trong 24h tới.`, 'success', 4000);
 
                         if (type === 'free') {
+                            // Xóa key đã dùng (key chỉ dùng 1 lần)
                             state.freeKey = '';
                             keyDisplayFree.textContent = '🔑 Key sẽ xuất hiện tại đây';
                             keyDisplayFree.className = 'key-display';
                             buffKeyFree.value = '';
                         } else {
-                            // Kiểm tra tổng số buff VIP (bao gồm cả free và nạp)
                             const totalBuffs = state.vipBuffs + state.freeVipKeys;
                             if (totalBuffs > state.vipUsed) {
                                 state.vipUsed++;
@@ -2208,7 +2273,6 @@
                             keyDisplayVip.textContent = '🔑 Key VIP sẽ xuất hiện sau khi nạp hoặc nhận nhiệm vụ';
                             keyDisplayVip.className = 'key-display';
                             buffKeyVip.value = '';
-                            // Xóa cả free key display nếu đang hiển thị key đó
                             freeVipKeyDisplay.textContent = '🔑 Key VIP Free sẽ xuất hiện tại đây';
                             freeVipKeyDisplay.className = 'key-display';
                             state.currentFreeVipKey = '';
@@ -2255,31 +2319,6 @@
 
             refCodeFree.addEventListener('keydown', function(e) {
                 if (e.key === 'Enter') applyRefFree.click();
-            });
-
-            getKeyFree.addEventListener('click', function() {
-                if (state.isBuffing) return;
-                const key = 'namdz12345';
-                state.freeKey = key;
-                keyDisplayFree.textContent = key;
-                keyDisplayFree.className = 'key-display has-key';
-                showToast('Key Free đã được tạo!', 'success');
-            });
-
-            copyKeyFree.addEventListener('click', function() {
-                if (!state.freeKey) {
-                    showToast('Chưa có key để sao chép!', 'warning');
-                    return;
-                }
-                copyToClipboard(state.freeKey);
-            });
-
-            clearKeyFree.addEventListener('click', function() {
-                state.freeKey = '';
-                keyDisplayFree.textContent = '🔑 Key sẽ xuất hiện tại đây';
-                keyDisplayFree.className = 'key-display';
-                buffKeyFree.value = '';
-                showToast('Đã xóa key', 'info');
             });
 
             btnBuffFree.addEventListener('click', function() {
@@ -2454,7 +2493,7 @@
             updateVipStats();
 
             console.log('🚀 Novelah Tool loaded successfully!');
-            console.log('📌 Key Free: namdz12345');
+            console.log('📌 Key Free: Lấy từ pool, mỗi key dùng 1 lần');
             console.log('📌 Key VIP: Tự động tạo khi nạp hoặc nhận nhiệm vụ');
             console.log('🔒 Mỗi key chỉ dùng 1 lần, phải get key mới sau khi buff.');
             console.log('💰 Gói 300k = 60 Buff VIP');
